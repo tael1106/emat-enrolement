@@ -1,4 +1,4 @@
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import axios from 'axios';
 import * as ImagePicker from 'expo-image-picker';
 import React, { useEffect, useState } from 'react';
@@ -7,7 +7,7 @@ import { Alert, Dimensions, Image, Pressable, StyleSheet, Text, TextInput, Touch
 
 const MAX_WIDTH = Math.round(Dimensions.get('screen').width)
 const MAX_HEIGHT = Math.round(Dimensions.get('screen').height)
-const API__URL = "http://oxygene-ci.com/emat";
+const API__URL = "https://oxygene-ci.com/emat";
 /* const API__URL = "http://192.168.1.128/emat"; */
 
 export default function HomeScreen({ navigation, route }) {
@@ -60,7 +60,8 @@ export default function HomeScreen({ navigation, route }) {
         // Lance la caméra
         const result = await ImagePicker.launchCameraAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: false,
+            allowsEditing: true, // Active le recadrage
+            aspect: [1, 1],       // Format carré (1:1), tu peux changer
             quality: 1
         });
         /*  console.log(result) */
@@ -86,7 +87,7 @@ export default function HomeScreen({ navigation, route }) {
 
 
         try {
-            const response = await fetch('http://oxygene-ci.com/emat/img/profile.php', {
+            const response = await fetch('https://oxygene-ci.com/emat/img/profile.php', {
                 method: 'POST',
                 body: formData,
                 headers: {
@@ -129,7 +130,7 @@ export default function HomeScreen({ navigation, route }) {
         console.log('telephoneEdit : ', telephoneEdit.length)
         console.log('substring : ', telephoneEdit.substring(0, 10))
 
-        
+
         try {
             const url = API__URL + '/enrolement/ajouter_contact.php';
             console.log(url)
@@ -187,7 +188,7 @@ export default function HomeScreen({ navigation, route }) {
 
                                 style={{ backgroundColor: '#CDD5BF', width: '100%', borderRadius: 10 }} >
                                 <View style={{ margin: 5, justifyContent: 'center', alignItems: 'left' }}>
-                                    <Text style={{ fontSize: 12, fontWeight: 'bold' }}>{"   "}{user.sigle} </Text >
+                                    <Text style={{ fontSize: 12, fontWeight: 'bold' , textTransform : 'uppercase'}}>{"   "}{user.lib_grade} </Text >
                                     <Text>{"  "}{user.nom_user} {user.prenom_user}</Text >
                                 </View>
                             </View>
@@ -199,7 +200,7 @@ export default function HomeScreen({ navigation, route }) {
                     </View>
                     <View style={{ marginTop: 30 }}>
                         {!user.image_profil
-                            ? <Image style={styles.icon_selected} source={require('./assets/avatar.png')} />
+                            ? <Image style={styles.icon_selected} source={require('./assets/icon.jpg')} />
                             : <Image style={styles.icon_selected}
                                 source={{ uri: 'https://oxygene-ci.com/emat/img/profile/' + user.image_profil }}
                             />
@@ -208,9 +209,9 @@ export default function HomeScreen({ navigation, route }) {
 
                     <Pressable
                         style={{
-                            marginTop: -50,
-                            marginLeft: 100,
-                            backgroundColor: '#000',
+                            marginTop: -30,
+                            marginLeft: 190,
+                            backgroundColor: '#999',
                             borderRadius: 50,
                             borderWidth: 4,
                             borderColor: 'white',
@@ -224,8 +225,8 @@ export default function HomeScreen({ navigation, route }) {
 
                     <View style={{ flexDirection: 'row', marginTop: 10 }}>
 
-                        <Text style={{ textTransform: 'uppercase', }}>Contacts téléphoniques</Text>
-
+                        {/*                         <Text style={{ textTransform: 'uppercase', }}>Contacts téléphoniques</Text>
+ */}
 
 
 
@@ -239,7 +240,18 @@ export default function HomeScreen({ navigation, route }) {
 
                             }}
                         >
-                            <Text style={styles.contact}>{formatNumero(user.telephone)}</Text>
+
+                            {!user.telephone || user.telephone === null
+                                ? <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                                    <MaterialIcons name="phone-android" size={50} color="#999" />
+                                    <Text style={{ fontSize: 10, color: '#999' }}>Ajouter un contact</Text>
+                                </View>
+                                :
+                                <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                                    <MaterialIcons name="phone-android" size={50} color="#596643" />
+                                    <Text style={styles.contact}>{formatNumero(user.telephone)}</Text>
+                                </View>
+                            }
                         </Pressable>
                         <Pressable
                             style={{ flex: 1, alignItems: 'center' }}
@@ -249,7 +261,18 @@ export default function HomeScreen({ navigation, route }) {
 
                             }}
                         >
-                            <Text style={styles.contact}>{formatNumero(user.telephone_2)}</Text>
+
+                            {!user.telephone_2 || user.telephone_2 === null
+                                ? <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                                    <MaterialIcons name="phone-android" size={50} color="#999" />
+                                    <Text style={{ fontSize: 10, color: '#999' }}>Ajouter un contact</Text>
+                                </View>
+                                :  <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                                    <MaterialIcons name="phone-android" size={50} color="#596643" />
+                                    <Text style={styles.contact}>{formatNumero(user.telephone_2)}</Text>
+                                </View>
+                            }
+
                         </Pressable>
                     </View>
                 </View>
@@ -409,12 +432,14 @@ const styles = StyleSheet.create({
     },
     contact: {
         fontSize: 22,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        color:"#596643"
+
     }
     , icon_selected: {
         width: MAX_WIDTH * 0.5,
         height: MAX_WIDTH * 0.5,
-        borderRadius: 999,
+        borderRadius: 10,
         borderColor: "#fff",
         backgroundColor: "#9ca1ac",
         borderWidth: 1

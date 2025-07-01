@@ -2,9 +2,9 @@ import axios from 'axios';
 import React, { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-export default function ClavierNumerique({ navigation }) {
-    const API__URL = "http://oxygene-ci.com/emat";
-    /* const API__URL = "http://192.168.1.128/emat"; */
+export default function ClavierNumerique({ navigation } ) {
+    const API__URL = "https://oxygene-ci.com/emat";
+    /*  const API__URL = "http://192.168.1.128/emat"; */
     const [mecano, setMecano] = useState('');
 
     const ajouterChiffre = (chiffre: number) => {
@@ -25,15 +25,13 @@ export default function ClavierNumerique({ navigation }) {
     const [message, setMessage] = useState(false)
 
     const valider = async () => {
-
-
         try {
             const url = API__URL + '/enrolement/index.php';
             console.log(url)
             const { data } = await axios.post(url, { mecano });
             console.log(data)
             if (data.success === true) {
-                navigation.navigate('home', {userInfo : data.user})
+                navigation.navigate('home', { userInfo: data.user })
             }
             if (data.success === false) {
                 setMessage(true)
@@ -42,8 +40,6 @@ export default function ClavierNumerique({ navigation }) {
             console.error("Erreur:", error);
             /*   setError("Une erreur s'est produite. Veuillez réessayer."); */
         }
-
-
     }
     return (
         <View style={{ flex: 1, }}>
